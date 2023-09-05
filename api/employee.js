@@ -2,9 +2,11 @@ module.exports = app => {
     const createEmployee = async (req, res) => {
         if(!req.body.endereco) return res.status(400).send('Informar Endereço')
         if(!req.body.pessoa) return res.status(400).send('Informar Pessoa')
+        if(!req.body.usuario) return res.status(400).send('Informar Usuário')
         
         const pessoa = { ...req.body.pessoa }
         const endereco = {...req.body.endereco }
+        const usuario = {...req.body.usuario }
 
         if(!endereco.logradouro || 
             !endereco.numero  || 
@@ -16,6 +18,7 @@ module.exports = app => {
         
         if(!pessoa.nome || !pessoa.email || !pessoa.telefone) return res.status(400).send('Informar Nome/Email/Telefone')
         if(!pessoa.cpf) return res.status(400).send('Informar Cpf!')
+        if(!usuario.usuario || !usuario.senha) return res.status(400).send('Informar Usuário e senha!')
         
         const pessoaDb = await app.db('pessoas')
         .where({ cpf: pessoa.cpf })
@@ -74,9 +77,25 @@ module.exports = app => {
             "id_pessoa": idPessoa.id
         }
 
+        let idFuncionario = ""
+
         await app.db('funcionarios')
         .insert(employee)
-        .then(_ => res.status(204).send("Inserido com sucesso!"))
+        .then((id) => {
+            idFuncionario = id[0]
+        })
+        .catch(err => res.status(500).send(err))
+
+        usuario.id_funcionario = idFuncionario
+
+        const timeElapsed = Date.now();
+        const today = new Date(timeElapsed);
+
+        usuario.data_inicio = today
+
+        await app.db('usuarios')
+        .insert(usuario)
+        .then(_ => res.status(204).json({"msg": "Usuário cadastrado com sucesso!"}))
         .catch(err => res.status(500).send(err))
 
         return

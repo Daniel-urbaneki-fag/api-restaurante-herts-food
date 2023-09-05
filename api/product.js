@@ -19,5 +19,11 @@ module.exports = app => {
         return
     }
 
-    return { createProduct }
+    const getProducts = async (req, res) => {
+        await app.db('produtos')
+            .select('id', 'nome', 'valor_unitario', 'peso', 'tipo')
+            .then(produtos => res.json(produtos))
+    }
+
+    return { createProduct, getProducts }
 }
