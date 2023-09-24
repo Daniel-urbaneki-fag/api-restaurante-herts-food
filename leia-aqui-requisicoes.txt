@@ -1,0 +1,134 @@
+Cadastrando dados com Postman
+
+Cadastro de cliente
+
+http://localhost:3000/createClient
+{
+    "endereco": {
+    "logradouro": "Rua voluntários da pátria",
+    "numero": "1634",
+    "complemento": "Apartamento 237",
+    "bairro": "Centro",
+    "cep": "82638373",
+    "cidade": "cascavel",
+    "estado": "Pr"
+    },
+    "pessoa": {
+    "nome": "Anderson dos santos",
+    "email": "anderson345@hotmail.com",
+    "telefone": "45998903290",
+    "cpf": 45287592345
+    }
+}
+
+
+Cadastro de funcionário
+
+
+http://localhost:3000/createEmployee
+{
+    "endereco": {
+    "logradouro": "Rua das Palmeiras",
+    "numero": "1345",
+    "complemento": "Casa",
+    "bairro": "Neva",
+    "cep": "85832322",
+    "cidade": "cascavel",
+    "estado": "Pr"
+    },
+    "pessoa": {
+    "nome": "joão lopes",
+    "email": "joão.lopes123@hotmail.com",
+    "telefone": "45998765432",
+    "cpf": 20687634576
+    },
+    "usuario": {
+        "usuario": "joao123",
+        "senha": "12345678"
+    }
+}
+
+
+http://localhost:3000/login
+{
+    "usuario": {
+        "usuario": "joao123",
+        "senha": "12345678"
+    }
+}
+
+Cadastro de produto
+
+http://localhost:3000/createProduct
+{
+    "produto": {
+        "nome": "X-Salada frango",
+        "valor_unitario": 18.99,
+        "peso": 1.500,
+        "tipo": "Massa"
+    }
+}
+
+
+Criando outro produto
+{
+    "produto": {
+        "nome": "Coca-cola Lata 350ml",
+        "valor_unitario": 6.00,
+        "peso": 350,
+        "tipo": "Refrigerante"
+    }
+}
+
+
+Listagem de produtos
+http://localhost:3000/getProducts
+
+
+Criando Pedido
+http://localhost:3000/createOrder
+{
+    "pedido":{
+        "produto": [{"nome": "Coca-cola Lata 350ml", "quantidade_produto": 2}, {"nome": "X-Salada frango", "quantidade_produto": 2}],
+        "cpf_cliente": 45287592345,
+        "id_funcionario": 1,
+        "numero_mesa": 8
+    }
+}
+
+
+Adição de itens em pedidos
+
+
+http://localhost:3000/addInOrder
+
+
+{
+    "pedido":{
+        "produto": [{"nome": "X-Salada frango", "quantidade_produto": 1}],
+        "id_pedido": 1,
+        "id_funcionario": 1
+    }
+}
+
+
+Fechamento de pedidos com opção de separar conta
+em no máximo 4 pessoas.
+
+
+http://localhost:3000/paymentOrder
+
+
+{
+    "pagamento": {
+        "id_pedido": 1,
+        "dividir_quantidade": 4,
+        "valor_pagamento": 15
+    }
+}
+
+
+Relatório de produção para cozinha
+
+
+http://localhost:3000/kitchenReport

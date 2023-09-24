@@ -95,10 +95,8 @@ module.exports = app => {
 
         await app.db('usuarios')
         .insert(usuario)
-        .then(_ => res.status(204).json({"msg": "Usuário cadastrado com sucesso!"}))
+        .then(_ => res.status(200).json({"msg": "Usuário cadastrado com sucesso!"}))
         .catch(err => res.status(500).send(err))
-
-        return
     }
 
     return { createEmployee }

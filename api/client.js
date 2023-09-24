@@ -74,7 +74,7 @@ module.exports = app => {
 
         await app.db('clientes')
             .insert(client)
-            .then(_ => res.status(204).send("Inserido com sucesso!"))
+            .then(_ => res.status(200).send("Cliente cadastrado com sucesso!"))
             .catch(err => res.status(500).send(err))
     }
 

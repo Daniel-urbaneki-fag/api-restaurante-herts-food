@@ -7,7 +7,8 @@ module.exports = app => {
         if(!pedido.produto || 
             !pedido.produto.length > 0  || 
             !pedido.cpf_cliente ||
-            !pedido.id_funcionario ) return res.status(400).send('Informações do pedido faltando!')
+            !pedido.id_funcionario ||
+            !pedido.numero_mesa ) return res.status(400).send('Informações do pedido faltando!')
         
         let isValidate = true
         pedido.produto.map((item) => {
@@ -33,6 +34,13 @@ module.exports = app => {
             .first()
                 
         if(!funcionarioDb) return res.status(400).send('Funcionario não cadastrado!')
+
+        const numMesa = await app.db('pedidos')
+            .where({ numero_mesa: pedido.numero_mesa })
+            .andWhere({ status: true })
+            .first()
+                
+        if(numMesa) return res.status(400).send('A Mesa está com pedidos não finalizados!')
 
         let arrayProduto = []
         
@@ -75,6 +83,7 @@ module.exports = app => {
                     "id_cliente": clientDb.id,
                     "valor_total" : valorTotal,
                     "valor_devedor": valorTotal,
+                    "numero_mesa": pedido.numero_mesa,
                     "data_pedido" : today
                 }
 
@@ -107,7 +116,7 @@ module.exports = app => {
                     
                         await Promise.all(promissesPedidosProdutos);
                     
-                        res.status(204).send();
+                        res.status(200).send("Pedido feito com sucesso!");
                     } catch (err) {
                         res.status(500).send(err);
                     }
@@ -208,7 +217,7 @@ module.exports = app => {
             
                 await Promise.all(promissesPedidosProdutos);
             
-                res.status(204).json({"success": "Novo pedido inserido!"});
+                res.status(200).json("Novos itens adicionados no pedido!");
             } catch (err) {
                 res.status(500).send(err);
             }
@@ -295,5 +304,38 @@ module.exports = app => {
         }
     }
 
-    return { createOrder, addInOrder, paymentOrder }
+    const kitchenReport = async (req, res) => {
+        await app.db('pessoas')
+            .select('pedidos.id','pedidos.numero_mesa', 'pedidos.status', 'pessoas.nome as cliente_nome')
+            .innerJoin('clientes', 'pessoas.id', 'clientes.id_pessoa')
+            .innerJoin('pedidos', function() {
+                this.on('clientes.id', '=', 'pedidos.id_cliente')
+                .andOn('pedidos.status', '=', 1)
+            })
+
+            .then(async (pedidos) => {
+                const resultado = [];
+                for (const pedido of pedidos) {
+                    const produtos = await app.db('pedidos_produtos')
+                    .select('produtos.nome as produto_nome', 'pedidos_produtos.quantidade_produto as quantidade_produto')
+                    .innerJoin('produtos', 'pedidos_produtos.id_produto', 'produtos.id')
+                    .where({id_pedido: pedido.id});
+                    resultado.push({
+                        id: pedido.id,
+                        numero_mesa: pedido.numero_mesa,
+                        status: pedido.status,
+                        cliente_nome: pedido.cliente_nome,
+                        produtos,
+                    });
+                }
+            
+                res.json(resultado);
+              })
+            .catch(err => {
+                console.error(err);
+                res.status(500).json({ error: 'Ocorreu um erro ao gerar o relatório.' });
+            });
+        }
+
+    return { createOrder, addInOrder, paymentOrder, kitchenReport }
 }

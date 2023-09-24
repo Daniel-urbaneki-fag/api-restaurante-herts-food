@@ -13,7 +13,7 @@ module.exports = app => {
             .first()
         
         if(!isLogin) return res.status(500).send("Usuário/ senha incorretos!")
-        if(isLogin) return res.status(204).send("Usuário logado com sucesso!")
+        if(isLogin) return res.status(200).send({ message: "Usuário logado com sucesso!", token: req.token })
     }
 
     return { login }

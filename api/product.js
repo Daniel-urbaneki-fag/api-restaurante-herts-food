@@ -13,7 +13,7 @@ module.exports = app => {
         produto.tipo = produto.tipo.charAt(0).toUpperCase() + produto.tipo.slice(1)
         await app.db('produtos')
         .insert(produto)
-        .then(_ => res.status(204).send())
+        .then(_ => res.status(200).send('Produto cadastrado com sucesso!'))
         .catch(err => res.status(500).send(err))
 
         return
